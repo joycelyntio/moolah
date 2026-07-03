@@ -1,0 +1,47 @@
+/* * Moolah - Custom Styles 
+ * Note: Core layout and colors are handled by Tailwind CSS in index.html.
+ */
+
+/* Import 'Nunito' font for that friendly, approachable, gamified look */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+/* Base Body Settings */
+body {
+    font-family: 'Nunito', sans-serif;
+    /* Soft off-white background matching the container */
+    background-color: #F4F6F0; 
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* * Hide scrollbars for horizontal lists (like the Camping app category tabs)
+ * This keeps the UI looking like a native mobile app rather than a website.
+ */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+/* * Smooth global transitions for interactive elements 
+ */
+button, select, input {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Creates that satisfying "press" effect when users tap buttons */
+button:active {
+    transform: scale(0.96);
+}
+
+/* Custom animation for the fire streak icon in the top nav */
+@keyframes subtle-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
+
+.fa-fire {
+    animation: subtle-bounce 2s infinite ease-in-out;
+}

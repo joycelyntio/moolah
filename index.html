@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moolah</title>
+    <!-- Tailwind CSS for sleek, modern UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for clean icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- External Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#F4F6F0] text-gray-800 font-sans min-h-screen flex flex-col items-center">
+
+    <div class="w-full max-w-md bg-[#F4F6F0] min-h-screen relative shadow-2xl overflow-hidden flex flex-col">
+        
+        <!-- Top Navigation -->
+        <header class="px-6 pt-8 pb-4 flex justify-between items-center z-10">
+            <div class="flex items-center space-x-2">
+                <span class="text-3xl font-black text-[#5C6B46] tracking-tighter">moolah</span>
+            </div>
+            <div class="bg-white px-4 py-2 rounded-full shadow-sm text-sm font-bold flex items-center space-x-1 border border-gray-100">
+                <i class="fa-solid fa-fire text-orange-400"></i>
+                <span id="nav-streak" class="text-gray-700">5 Days</span>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Area -->
+        <main class="flex-1 px-5 pb-32 overflow-y-auto no-scrollbar">
+            
+            <!-- SECTION 1: WIZARD -->
+            <section id="screen-onboarding" class="space-y-6 hidden">
+                <div class="text-center mt-4">
+                    <div class="w-24 h-24 bg-[#D4E08B] rounded-full mx-auto flex items-center justify-center text-4xl shadow-sm mb-4">💸</div>
+                    <h2 class="text-2xl font-black text-gray-800">Hello, let's start!</h2>
+                    <p class="text-gray-500 font-semibold mt-1">What is your monthly income goal?</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-[32px] shadow-sm space-y-5 border border-gray-50">
+                    <div class="space-y-3">
+                        <label class="block text-sm font-bold text-gray-400 uppercase tracking-wide">Select Income Source</label>
+                        <select id="income-select" class="w-full bg-[#F4F6F0] text-gray-700 rounded-2xl px-4 py-3 font-bold focus:outline-none focus:ring-2 focus:ring-[#9CB071]" onchange="calculateCashFlow()">
+                            <option value="3200">Fresh Grad Full-Time ($3,200/mo)</option>
+                            <option value="1200">Part time job at Chagee ($1,200/mo)</option>
+                            <option value="600">Internship Allowance ($600/mo)</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-[#F8FAFC] rounded-2xl p-4 space-y-3 border border-gray-100">
+                        <div class="flex justify-between items-center text-sm font-bold">
+                            <span class="text-gray-500">Gross Income:</span>
+                            <span id="calc-gross" class="text-gray-800">$3,200.00</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm font-bold">
+                            <span class="text-red-400">CPF Contribution (20%):</span>
+                            <span id="calc-cpf" class="text-red-500">-$640.00</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-200 border-dashed text-lg font-black">
+                            <span class="text-gray-800">Take-Home:</span>
+                            <span id="calc-takehome" class="text-[#7A8C5C]">$2,560.00</span>
+                        </div>
+                    </div>
+
+                    <button onclick="switchView('dashboard')" class="w-full bg-[#5C6B46] text-white font-black py-4 rounded-full shadow-md hover:bg-[#4A5738] transition-transform active:scale-95 text-lg tracking-wide">
+                        Lock In Cash Flow
+                    </button>
+                </div>
+            </section>
+
+            <!-- SECTION 2: DASHBOARD -->
+            <section id="screen-dashboard" class="space-y-6">
+                
+                <!-- NEW: Gamified Tier / XP Progress Bar -->
+                <div class="bg-gradient-to-r from-[#5C6B46] to-[#7A8C5C] p-5 rounded-[32px] shadow-md text-white relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <span class="text-xs font-bold text-white/70 uppercase tracking-wider">Current Level</span>
+                            <h3 class="text-2xl font-black">Tier 2: Saver</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-2xl shadow-inner">🌱</div>
+                    </div>
+                    <div class="w-full bg-black/20 rounded-full h-2.5 mt-3">
+                        <div class="bg-[#D4E08B] h-2.5 rounded-full w-[60%] shadow-[0_0_10px_rgba(212,224,139,0.5)]"></div>
+                    </div>
+                    <p class="text-xs font-bold text-white/80 mt-2 text-right">300 / 500 XP to Tier 3</p>
+                </div>
+
+                <!-- Balance Card -->
+                <div class="bg-white p-6 rounded-[32px] shadow-sm border border-gray-50 relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="bg-[#F4F6F0] text-[#5C6B46] px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider">Active Balance</span>
+                    </div>
+                    
+                    <div class="flex items-end justify-between">
+                        <div>
+                            <h3 id="dash-cash" class="text-4xl font-black text-gray-800">$2,560</h3>
+                            <p class="text-gray-400 font-bold text-sm mt-1">Simulated Take-Home</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-full border-8 border-[#D4E08B] border-t-[#F4F6F0] flex items-center justify-center">
+                            <span class="text-xs font-black text-[#5C6B46]">80%</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mt-6 pt-5 border-t border-gray-100">
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 uppercase">CPF Ordinary</span>
+                            <div class="text-lg font-black text-gray-700 mt-1" id="dash-cpf-oa">$384</div>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 uppercase">Portfolio</span>
+                            <div class="text-lg font-black text-gray-700 mt-1">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task List -->
+                <div>
+                    <h4 class="text-lg font-black text-gray-800 mb-3">To do today:</h4>
+                    <div class="space-y-3">
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-[#FFB5A7] w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xl shadow-inner"><i class="fa-solid fa-book-open"></i></div>
+                                <div>
+                                    <span class="bg-[#FFE4DF] text-[#D86B5A] px-2 py-0.5 rounded text-[10px] font-black uppercase">Learn +50 XP</span>
+                                    <p class="font-bold text-gray-800 text-sm leading-tight mt-1">Read ETF Basics</p>
+                                </div>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-200"></div>
+                        </div>
+
+                        <!-- Updated: Save Matcha Money -->
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-[#C1D3FE] w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xl shadow-inner"><i class="fa-solid fa-piggy-bank"></i></div>
+                                <div>
+                                    <span class="bg-[#E2EAFB] text-[#5A7ED8] px-2 py-0.5 rounded text-[10px] font-black uppercase">Daily +10 XP</span>
+                                    <p class="font-bold text-gray-800 text-sm leading-tight mt-1">Save Matcha Money</p>
+                                </div>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-[#C1D3FE] flex items-center justify-center text-[#C1D3FE]"><i class="fa-solid fa-check text-xs"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leaderboard -->
+                <div class="bg-[#E9EDC9] p-5 rounded-[32px] shadow-sm relative">
+                    <h4 class="text-sm font-black text-[#5C6B46] uppercase tracking-wide mb-3">Community Streaks</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center bg-white/60 p-3 rounded-xl">
+                            <div class="flex items-center space-x-3 text-sm font-bold text-gray-800">
+                                <span>#1</span>
+                                <div class="w-6 h-6 bg-[#D4E08B] rounded-full flex items-center justify-center text-[10px]">B</div>
+                                <span>Bob (You)</span>
+                            </div>
+                            <span class="font-black text-[#5C6B46]">5d</span>
+                        </div>
+                        <div class="flex justify-between items-center px-3 py-1 opacity-70">
+                            <div class="flex items-center space-x-3 text-sm font-bold text-gray-700">
+                                <span>#2</span>
+                                <div class="w-6 h-6 bg-[#FFB5A7] rounded-full flex items-center justify-center text-[10px]">M</div>
+                                <span>Merilyn</span>
+                            </div>
+                            <span class="font-black text-gray-600">4d</span>
+                        </div>
+                        <div class="flex justify-between items-center px-3 py-1 opacity-70">
+                            <div class="flex items-center space-x-3 text-sm font-bold text-gray-700">
+                                <span>#3</span>
+                                <div class="w-6 h-6 bg-[#C1D3FE] rounded-full flex items-center justify-center text-[10px]">S</div>
+                                <span>Syukrinaa</span>
+                            </div>
+                            <span class="font-black text-gray-600">3d</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: LEARN -->
+            <section id="screen-learn" class="space-y-6 hidden">
+                <div class="relative bg-white rounded-2xl shadow-sm border border-gray-50 p-1 flex">
+                    <span class="pl-4 pt-3 text-gray-400"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" placeholder="Search topics..." class="w-full bg-transparent pl-3 pr-4 py-3 font-bold text-gray-700 placeholder-gray-400 focus:outline-none text-sm">
+                </div>
+
+                <div class="bg-white p-5 rounded-[32px] shadow-sm border border-gray-50 space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-500"><i class="fa-solid fa-shield-halved"></i></div>
+                        <h4 class="text-sm font-black text-gray-800">Hype Detector</h4>
+                    </div>
+                    <p class="text-xs font-bold text-gray-400 leading-relaxed">Paste a TikTok claim here to verify if it's solid advice or just hype.</p>
+                    <div class="flex space-x-2">
+                        <input id="hype-input" type="text" placeholder="e.g. Crypto is 10x guaranteed..." class="flex-1 bg-[#F4F6F0] rounded-xl px-4 py-3 font-bold text-sm focus:outline-none">
+                        <button onclick="runHypeDetector()" class="bg-gray-800 text-white font-bold px-4 py-3 rounded-xl active:scale-95 transition text-sm">Scan</button>
+                    </div>
+                    <div id="hype-result" class="hidden p-3 rounded-xl text-xs font-bold border mt-2"></div>
+                </div>
+
+                <!-- Functional Categories -->
+                <div>
+                    <h4 class="text-lg font-black text-gray-800 mb-3">Categories</h4>
+                    <div class="flex space-x-3 overflow-x-auto no-scrollbar pb-2">
+                        <button onclick="filterCategory('All', this)" class="cat-btn bg-[#5C6B46] text-white border-[#5C6B46] px-5 py-2 rounded-full font-bold text-sm shadow-sm whitespace-nowrap border-2">All Topics</button>
+                        <button onclick="filterCategory('Investing', this)" class="cat-btn bg-white text-gray-600 border-transparent hover:border-gray-200 px-5 py-2 rounded-full font-bold text-sm shadow-sm whitespace-nowrap border-2">Investing</button>
+                        <button onclick="filterCategory('CPF', this)" class="cat-btn bg-white text-gray-600 border-transparent hover:border-gray-200 px-5 py-2 rounded-full font-bold text-sm shadow-sm whitespace-nowrap border-2">CPF</button>
+                    </div>
+                </div>
+
+                <!-- Content Cards (Now with data-category) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="learn-card bg-white p-4 rounded-3xl shadow-sm border border-gray-50 flex flex-col items-center text-center transition-all" data-category="CPF">
+                        <div class="w-16 h-16 bg-[#D4E08B] rounded-2xl mb-3 flex items-center justify-center text-2xl text-[#5C6B46]"><i class="fa-brands fa-youtube"></i></div>
+                        <h5 class="text-sm font-black text-gray-800 leading-tight">CPF Ordinary Basics</h5>
+                        <p class="text-[10px] font-bold text-gray-400 mt-1">3 Min Video</p>
+                    </div>
+                    <div class="learn-card bg-white p-4 rounded-3xl shadow-sm border border-gray-50 flex flex-col items-center text-center transition-all" data-category="Investing">
+                        <div class="w-16 h-16 bg-[#FFB5A7] rounded-2xl mb-3 flex items-center justify-center text-2xl text-white"><i class="fa-brands fa-instagram"></i></div>
+                        <h5 class="text-sm font-black text-gray-800 leading-tight">What is an ETF?</h5>
+                        <p class="text-[10px] font-bold text-gray-400 mt-1">Infographic</p>
+                    </div>
+                </div>
+
+                <!-- NEW: News Articles Section -->
+                <div class="mt-8">
+                    <h4 class="text-lg font-black text-gray-800 mb-3">Finance News</h4>
+                    <div class="space-y-3">
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex space-x-4 items-center">
+                            <div class="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center text-blue-400 text-xl flex-shrink-0"><i class="fa-regular fa-newspaper"></i></div>
+                            <div>
+                                <h5 class="text-sm font-black text-gray-800 leading-tight">MAS Announces New SSB Rates</h5>
+                                <p class="text-[10px] font-bold text-gray-400 mt-1">Straits Times · 2h ago</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex space-x-4 items-center">
+                            <div class="w-14 h-14 bg-teal-50 rounded-xl flex items-center justify-center text-teal-400 text-xl flex-shrink-0"><i class="fa-solid fa-money-trend-up"></i></div>
+                            <div>
+                                <h5 class="text-sm font-black text-gray-800 leading-tight">Why Gen Z is pivoting to High-Yield accounts</h5>
+                                <p class="text-[10px] font-bold text-gray-400 mt-1">CNA · 5h ago</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- SECTION 4: SIMULATE -->
+            <section id="screen-simulate" class="space-y-6 hidden">
+                <div>
+                    <h4 class="text-lg font-black text-gray-800 mb-3">My Savings Goals</h4>
+                    <div class="space-y-4">
+                        <div class="bg-white p-5 rounded-[32px] shadow-sm border border-gray-50 flex items-center space-x-4">
+                            <div class="w-14 h-14 bg-[#C1D3FE] rounded-full flex items-center justify-center text-2xl">✈️</div>
+                            <div class="flex-1">
+                                <h5 class="text-sm font-black text-gray-800">Graduation Trip</h5>
+                                <p class="text-xs font-bold text-gray-400">Japan</p>
+                                <div class="w-full bg-gray-100 rounded-full h-2 mt-2">
+                                    <div class="bg-[#5A7ED8] h-2 rounded-full w-[40%]"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-[32px] shadow-sm border border-gray-50 flex items-center space-x-4">
+                            <div class="w-14 h-14 bg-[#FFB5A7] rounded-full flex items-center justify-center text-2xl">🎟️</div>
+                            <div class="flex-1">
+                                <h5 class="text-sm font-black text-gray-800">BIGBANG VIP Tickets</h5>
+                                <p class="text-xs font-bold text-gray-400">National Stadium</p>
+                                <div class="w-full bg-gray-100 rounded-full h-2 mt-2">
+                                    <div class="bg-[#D86B5A] h-2 rounded-full w-[85%]"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-[32px] shadow-sm border border-gray-50 space-y-5">
+                    <div class="text-center">
+                        <h4 class="text-sm font-black text-gray-800 uppercase tracking-wide">Trending Expense Scaler</h4>
+                        <p class="text-xs font-bold text-gray-400 mt-1">Select a habit and see how cutting back grows your simulated wealth.</p>
+                    </div>
+
+                    <div class="flex justify-center">
+                        <select id="expense-type" class="w-full max-w-[200px] bg-[#F4F6F0] text-gray-700 text-center rounded-xl px-4 py-2 font-black text-sm focus:outline-none focus:ring-2 focus:ring-[#9CB071]" onchange="updateBenchmarker()">
+                            <option value="6.50" data-name="Drinks">Matcha / BBT ($6.50)</option>
+                            <option value="15.90" data-name="Blind Box">Popmart Blind Box ($15.90)</option>
+                            <option value="9.90" data-name="Acai">Acai Bowl ($9.90)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="text-center mt-2">
+                        <span id="bbt-count" class="text-3xl font-black text-[#5C6B46]">4 Times</span>
+                        <span class="text-sm font-bold text-gray-400"> / week</span>
+                    </div>
+                    
+                    <input id="bbt-slider" type="range" min="0" max="10" value="4" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#5C6B46]" oninput="updateBenchmarker()">
+
+                    <div class="bg-[#F4F6F0] p-4 rounded-2xl text-sm font-bold text-gray-600 flex justify-between items-center">
+                        <span>1 Yr Simulated Return:</span>
+                        <span id="bbt-savings" class="text-lg font-black text-[#7A8C5C]">+$1,392.50</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="absolute bottom-6 left-0 right-0 px-6">
+            <nav class="bg-white rounded-full shadow-lg border border-gray-100 px-6 py-4 flex justify-between items-center">
+                <button onclick="switchView('onboarding')" id="tab-onboarding" class="text-gray-400 hover:text-gray-800 transition flex flex-col items-center">
+                    <i class="fa-solid fa-wand-magic-sparkles text-xl mb-1"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-wider">Start</span>
+                </button>
+                <button onclick="switchView('dashboard')" id="tab-dashboard" class="text-[#5C6B46] transition flex flex-col items-center">
+                    <i class="fa-solid fa-house text-xl mb-1"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-wider">Home</span>
+                </button>
+                <button onclick="switchView('learn')" id="tab-learn" class="text-gray-400 hover:text-gray-800 transition flex flex-col items-center">
+                    <i class="fa-solid fa-book-open text-xl mb-1"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-wider">Learn</span>
+                </button>
+                <button onclick="switchView('simulate')" id="tab-simulate" class="text-gray-400 hover:text-gray-800 transition flex flex-col items-center">
+                    <i class="fa-solid fa-gamepad text-xl mb-1"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-wider">Play</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- External Application Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>
