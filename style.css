@@ -1,47 +1,46 @@
-/* * Moolah - Custom Styles 
- * Note: Core layout and colors are handled by Tailwind CSS in index.html.
- */
+/* Custom Fonts */
+@font-face {
+    font-family: 'Cambria';
+    src: local('Cambria'), local('Georgia'), serif;
+}
 
-/* Import 'Nunito' font for that friendly, approachable, gamified look */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+@font-face {
+    font-family: 'Calibri';
+    src: local('Calibri'), local('Arial'), sans-serif;
+}
 
-/* Base Body Settings */
 body {
-    font-family: 'Nunito', sans-serif;
-    /* Soft off-white background matching the container */
-    background-color: #F4F6F0; 
+    font-family: 'Calibri', 'Segoe UI', sans-serif;
+    background-color: #0A2528; /* Dark Green - Main Background */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* * Hide scrollbars for horizontal lists (like the Camping app category tabs)
- * This keeps the UI looking like a native mobile app rather than a website.
- */
+/* Apply Cambria to all headings and serif classes */
+h1, h2, h3, h4, h5, h6, .font-serif {
+    font-family: 'Cambria', 'Georgia', serif;
+}
+
+/* Hide scrollbars for horizontal lists */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }
 .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-/* * Smooth global transitions for interactive elements 
- */
+/* Smooth global transitions */
 button, select, input {
     transition: all 0.2s ease-in-out;
 }
 
-/* Creates that satisfying "press" effect when users tap buttons */
-button:active {
+button:active, .active\:scale-95:active {
     transform: scale(0.96);
 }
 
-/* Custom animation for the fire streak icon in the top nav */
-@keyframes subtle-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-2px); }
-}
-
-.fa-fire {
-    animation: subtle-bounce 2s infinite ease-in-out;
+/* Custom scrollbar for select dropdowns / inputs to match dark theme */
+input, select, textarea {
+    font-family: 'Calibri', 'Segoe UI', sans-serif;
+    color-scheme: dark;
 }
