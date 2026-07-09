@@ -214,6 +214,26 @@ function updateTierUI() {
 }
 
 // --- Paycheck Simulator ---
+// Employee's share of CPF contribution, Age 55 & below (from 1 Jan 2026 CPF table):
+//   TW <= $50            -> $0
+//   $50 < TW <= $500     -> $0
+//   $500 < TW <= $750    -> 0.6 x (TW - 500)
+//   TW > $750            -> 20% of wages (Ordinary Wages, capped at $1,600/mo)
+// Employee's share is rounded down to the nearest dollar per CPF Board rules.
+function calcEmployeeCpf(tw) {
+    let cpf;
+    if (tw <= 50) {
+        cpf = 0;
+    } else if (tw <= 500) {
+        cpf = 0;
+    } else if (tw <= 750) {
+        cpf = 0.6 * (tw - 500);
+    } else {
+        cpf = Math.min(0.20 * tw, 1600);
+    }
+    return Math.floor(cpf);
+}
+
 function calculateCashFlow() {
     const selectEl = document.getElementById('income-select');
     if (!selectEl) return;
@@ -221,7 +241,7 @@ function calculateCashFlow() {
     let activeIncome = parseInt(selectEl.value);
 
     const gross = activeIncome;
-    const cpf = gross * 0.20;
+    const cpf = calcEmployeeCpf(gross);
     const takehome = gross - cpf;
 
     document.getElementById('calc-gross').innerText = `$${gross.toLocaleString()}`;
@@ -232,7 +252,7 @@ function calculateCashFlow() {
     const dashCpf = document.getElementById('dash-cpf-oa');
     
     if (dashCash) dashCash.innerText = `$${takehome.toLocaleString()}`;
-    if (dashCpf) dashCpf.innerText = `$${(cpf * 0.6).toLocaleString()}`;
+    if (dashCpf) dashCpf.innerText = `$${Math.floor(cpf * 0.6).toLocaleString()}`;
 }
 
 // --- Hype Detector (Autocomplete) ---
