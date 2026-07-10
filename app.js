@@ -170,6 +170,47 @@ function switchView(viewId) {
     }
 }
 
+// --- Custom Job Addition ---
+function toggleCustomJobForm() {
+    const form = document.getElementById('custom-job-ui');
+    if (form) {
+        form.classList.toggle('hidden');
+    }
+}
+
+function addCustomJob() {
+    const nameInput = document.getElementById('custom-job-name');
+    const salaryInput = document.getElementById('custom-job-salary');
+    const selectEl = document.getElementById('income-select');
+    
+    if (!nameInput || !salaryInput || !selectEl) return;
+
+    const name = nameInput.value.trim();
+    const salary = parseInt(salaryInput.value);
+
+    if (!name || isNaN(salary) || salary <= 0) {
+        showToast("Please enter a valid job title and salary.");
+        return;
+    }
+
+    // Create new option
+    const newOption = document.createElement('option');
+    newOption.value = salary;
+    newOption.innerText = `${name} ($${salary.toLocaleString()}/mo)`;
+    
+    // Add to dropdown and select it
+    selectEl.appendChild(newOption);
+    selectEl.value = salary;
+
+    // Clean up UI
+    nameInput.value = '';
+    salaryInput.value = '';
+    toggleCustomJobForm();
+    
+    showToast("Custom job added!");
+    calculateCashFlow();
+}
+
 // --- Upskill Quiz Logic & Tier Algorithm ---
 function checkQuizAnswer(answer) {
     if(answer === 'correct') {
