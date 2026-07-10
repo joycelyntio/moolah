@@ -1,5 +1,14 @@
 /**
  * Moolah Prototype - Core Application Logic
+ *
+ * --- BOB'S PERSONA (for demo/skit consistency) ---
+ * Bob, 24, fresh grad, first job. Monthly salary $3,200 (default income option).
+ * Take-home after CPF: $2,560. Follows the 50/30/20 rule -> ~$512/mo to savings & investing.
+ * Risk appetite: MEDIUM. He's still building his short-term goals (Japan trip + concert
+ * tickets, $1,740 saved so far) but has started investing a smaller slice long-term.
+ * ~4 months on Moolah. Investing split: ~60% ETF (growth) / 40% SSB (safety).
+ * That gives him a small, defensible, non-zero portfolio (~$240) - realistic for someone
+ * 4 months in, and enough to demonstrate the "start investing early" message.
  */
 
 // --- Global State ---
@@ -16,7 +25,7 @@ const pageContent = {
             <div class="bg-[#EEF5F3] p-4 rounded-2xl my-3 border border-[#569B91]/40">
                 <p class="text-[#113A3E] font-bold text-xs"><i class="fa-solid fa-lightbulb mr-1"></i> Current Interest Rate: Up to 3.5% per annum.</p>
             </div>
-            <p>When you start working, 20% of your paycheck goes into your CPF. Your employer also contributes an additional 17%.</p>
+            <p>When you start working, 20% of your paycheck goes into your CPF. Your employer also contributes an additional 17%. For those aged 35 and below, about 62% of that combined contribution flows into your Ordinary Account.</p>
             <p><strong>Pro Tip:</strong> Many youths use their OA savings to pay for their first BTO downpayment!</p>
         `
     },
@@ -181,7 +190,12 @@ function updateTierUI() {
     const iconEl = document.getElementById('tier-icon');
     const quizBtn = document.getElementById('quiz-btn');
 
-    if(titleEl) titleEl.innerText = "Tier 3: Investor";
+    if(titleEl) {
+        titleEl.innerText = "Tier 3: Investor";
+        // Update contextual text to show mastery
+        titleEl.nextElementSibling.innerHTML = '<i class="fa-solid fa-check-double mr-1"></i>Tier 2 Mastered';
+        titleEl.nextElementSibling.classList.replace('text-[#FFB5A7]', 'text-green-300');
+    }
     if(progEl) progEl.style.width = "100%";
     if(subEl) subEl.innerText = "Max Tier Reached!";
     if(iconEl) iconEl.innerText = "🌳";
@@ -234,6 +248,39 @@ function calcEmployeeCpf(tw) {
     return Math.floor(cpf);
 }
 
+// Employer's share of CPF contribution, Age 55 & below (approximated for prototype):
+//   TW <= $50            -> $0
+//   $50 < TW <= $500     -> $0
+//   $500 < TW <= $750    -> 0.51 x (TW - 500)   (approx. employer bracket rate)
+//   TW > $750            -> 17% of wages (Ordinary Wages)
+function calcEmployerCpf(tw) {
+    let cpf;
+    if (tw <= 50) {
+        cpf = 0;
+    } else if (tw <= 500) {
+        cpf = 0;
+    } else if (tw <= 750) {
+        cpf = 0.51 * (tw - 500);
+    } else {
+        cpf = 0.17 * tw;
+    }
+    return Math.floor(cpf);
+}
+
+// CPF Ordinary Account (OA) allocation.
+// IMPORTANT: OA gets its share of the TOTAL contribution (employer + employee),
+// NOT just a fraction of the employee's own deduction.
+// For members aged 35 & below, the OA allocation ratio is 23/37 (~62.17%) of
+// the combined contribution (this matches the official CPF Allocation Rates table,
+// where OA=23%, SA=6%, MediSave=8% of wage, summing to the 37% total rate).
+function calcOaAllocation(tw) {
+    const employeeShare = calcEmployeeCpf(tw);
+    const employerShare = calcEmployerCpf(tw);
+    const totalContribution = employeeShare + employerShare;
+    const oaRatio = 23 / 37; // Age <=35 allocation ratio
+    return Math.round(totalContribution * oaRatio);
+}
+
 function calculateCashFlow() {
     const selectEl = document.getElementById('income-select');
     if (!selectEl) return;
@@ -243,6 +290,7 @@ function calculateCashFlow() {
     const gross = activeIncome;
     const cpf = calcEmployeeCpf(gross);
     const takehome = gross - cpf;
+    const oaAllocation = calcOaAllocation(gross);
 
     document.getElementById('calc-gross').innerText = `$${gross.toLocaleString()}`;
     document.getElementById('calc-cpf').innerText = `-$${cpf.toLocaleString()}`;
@@ -252,7 +300,7 @@ function calculateCashFlow() {
     const dashCpf = document.getElementById('dash-cpf-oa');
     
     if (dashCash) dashCash.innerText = `$${takehome.toLocaleString()}`;
-    if (dashCpf) dashCpf.innerText = `$${Math.floor(cpf * 0.6).toLocaleString()}`;
+    if (dashCpf) dashCpf.innerText = `$${oaAllocation.toLocaleString()}`;
 }
 
 // --- Hype Detector (Autocomplete) ---
@@ -400,5 +448,6 @@ window.onload = function() {
         filterCategory('All', allTopicsBtn);
     }
     
-    switchView('dashboard'); 
+    // INITIALIZE ON STARTING PAGE (ONBOARDING)
+    switchView('onboarding'); 
 };
