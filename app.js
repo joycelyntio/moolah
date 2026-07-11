@@ -113,9 +113,13 @@ function openContent(id) {
 function switchView(viewId) {
     const screens = ['welcome', 'name', 'onboarding', 'dashboard', 'learn', 'simulate', 'content', 'quiz'];
     
+    // Hide all screens completely
     screens.forEach(screen => {
         const screenEl = document.getElementById(`screen-${screen}`);
-        if(screenEl) screenEl.classList.add('hidden');
+        if(screenEl) {
+            screenEl.classList.add('hidden');
+            screenEl.classList.remove('flex'); // <-- This fixes the overlap bug!
+        }
         
         const tab = document.getElementById(`tab-${screen}`);
         if (tab) {
@@ -124,14 +128,17 @@ function switchView(viewId) {
         }
     });
 
+    // Show target screen
     const targetScreen = document.getElementById(`screen-${viewId}`);
     if(targetScreen) {
         targetScreen.classList.remove('hidden');
+        // Only apply flex centering to the welcome/name screens
         if (viewId === 'welcome' || viewId === 'name') {
             targetScreen.classList.add('flex');
         }
     }
     
+    // Toggle global Navigation Header and Footer
     const topNav = document.getElementById('top-nav');
     const bottomNav = document.getElementById('bottom-nav');
     
@@ -143,6 +150,7 @@ function switchView(viewId) {
         if(bottomNav) bottomNav.classList.remove('hidden');
     }
     
+    // Handle tab highlights
     let activeNavId = (viewId === 'content' || viewId === 'quiz') ? 'learn' : viewId;
     if(viewId === 'quiz') activeNavId = 'dashboard';
     
