@@ -21,8 +21,21 @@
             <span id="toast-msg">Loading...</span>
         </div>
 
+        <!-- Dynamic Tutorial Bubble (Moved via JS directly under features without blurring) -->
+        <div id="tutorial-popover" class="hidden my-4 z-[60] w-full animate-float">
+            <div class="bg-[#113A3E] p-5 rounded-3xl shadow-xl w-full border-2 border-[#569B91] relative">
+                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-[#569B91]"></div>
+                <h3 id="tut-title" class="text-base font-black text-[#EEF5F3] mb-1 leading-tight">Tutorial Step</h3>
+                <p id="tut-text" class="text-sm font-bold text-gray-300 mb-4 leading-snug">Instruction text...</p>
+                <div class="flex justify-between items-center border-t border-[#184F55] pt-3">
+                    <span id="tut-progress" class="text-xs font-black text-[#569B91]">1 / 6</span>
+                    <button onclick="nextTutorialStep()" class="bg-[#569B91] text-white px-5 py-2 rounded-full text-sm font-bold shadow-md active:scale-95 transition-transform hover:bg-white hover:text-[#113A3E]" id="tut-btn-text">Next <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+        </div>
+
         <!-- Top Navigation -->
-        <header class="px-6 pt-8 pb-4 flex justify-between items-center z-10">
+        <header id="top-nav" class="px-6 pt-8 pb-4 flex justify-between items-center z-10 hidden">
             <div class="flex items-center space-x-2">
                 <span class="text-3xl font-black text-[#569B91] tracking-tighter">moolah</span>
             </div>
@@ -33,18 +46,42 @@
         </header>
 
         <!-- Main Scrollable Area -->
-        <main class="flex-1 px-5 pb-32 overflow-y-auto no-scrollbar">
+        <main class="flex-1 px-5 pb-32 overflow-y-auto no-scrollbar relative z-10">
+
+            <!-- SECTION 0A: WELCOME SCREEN -->
+            <section id="screen-welcome" class="space-y-6 flex flex-col items-center justify-center min-h-[80vh]">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-[#569B91] rounded-3xl mx-auto flex items-center justify-center text-4xl shadow-lg mb-6 rotate-12"><i class="fa-solid fa-hand-holding-dollar text-white"></i></div>
+                    <h2 class="text-3xl font-black text-[#EEF5F3] mb-2 tracking-tight">Welcome to Moolah</h2>
+                    <p class="text-[#569B91] font-bold">Is this your first time using the app?</p>
+                </div>
+                <div class="w-full space-y-4 mt-8 px-4">
+                    <button onclick="askName()" class="w-full bg-[#EEF5F3] text-[#113A3E] font-black py-4 rounded-2xl shadow-md hover:bg-white transition active:scale-95 text-lg">Yes, I'm new!</button>
+                    <button onclick="skipToApp()" class="w-full bg-transparent text-[#569B91] border-2 border-[#569B91] font-black py-4 rounded-2xl hover:bg-[#184F55] transition active:scale-95 text-lg">No, I'm returning</button>
+                </div>
+            </section>
+
+            <!-- SECTION 0B: NAME INPUT -->
+            <section id="screen-name" class="space-y-6 hidden flex-col items-center justify-center min-h-[80vh]">
+                <div class="text-center w-full px-4">
+                    <h2 class="text-3xl font-black text-[#EEF5F3] mb-3 leading-tight">Nice to meet you.</h2>
+                    <p class="text-[#569B91] font-bold mb-8">What should we call you?</p>
+                    <input type="text" id="new-user-name" placeholder="Your Name" autocomplete="off" class="w-full bg-[#EEF5F3] text-[#113A3E] rounded-2xl px-5 py-4 text-xl font-black focus:outline-none focus:ring-4 focus:ring-[#569B91] text-center mb-6 shadow-inner placeholder-gray-400">
+                    <button onclick="startTutorial()" class="w-full bg-[#569B91] text-white font-black py-4 rounded-2xl shadow-md hover:bg-[#184F55] transition active:scale-95 text-lg">Start Tutorial <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </section>
             
             <!-- SECTION 1: WIZARD -->
-            <section id="screen-onboarding" class="space-y-6 hidden">
-                <div class="text-center mt-4">
+            <section id="screen-onboarding" class="space-y-6 hidden pt-4">
+                <div class="text-center">
                     <div class="w-24 h-24 bg-[#569B91] rounded-full mx-auto flex items-center justify-center text-4xl shadow-sm mb-4">💸</div>
-                    <h2 class="text-2xl font-black text-[#EEF5F3]">Hello, let's start!</h2>
-                    <p class="text-[#569B91] font-semibold mt-1">What is your monthly income goal?</p>
+                    <h2 class="text-2xl font-black text-[#EEF5F3]">Hello, <span id="user-name-display" class="text-[#569B91]">let's start</span>!</h2>
+                    <p class="text-gray-400 font-bold mt-1 text-sm">What is your monthly income goal?</p>
                 </div>
 
-                <div class="bg-[#EEF5F3] p-6 rounded-[32px] shadow-sm space-y-5 border border-[#184F55]/10">
-                    <div class="space-y-2">
+                <!-- TUTORIAL TARGET 1: CPF Calculator -->
+                <div id="tut-target-cpf" class="bg-[#EEF5F3] p-6 rounded-[32px] shadow-sm space-y-5 border border-[#184F55]/10 bg-white">
+                    <div class="space-y-2 relative">
                         <label class="block text-sm font-bold text-gray-400 uppercase tracking-wide">Select Income Source</label>
                         <select id="income-select" class="w-full bg-[#0A2528] text-[#EEF5F3] rounded-2xl px-4 py-3 font-bold focus:outline-none focus:ring-2 focus:ring-[#569B91]" onchange="calculateCashFlow()">
                             <option value="3200">Fresh Grad Full-Time ($3,200/mo)</option>
@@ -52,14 +89,16 @@
                             <option value="600">Internship Allowance ($600/mo)</option>
                         </select>
                         
-                        <!-- ADD CUSTOM JOB TOGGLE & UI -->
                         <div class="text-right pt-1">
-                            <button onclick="toggleCustomJobForm()" class="text-[11px] font-black text-[#569B91] uppercase tracking-wider hover:text-[#113A3E] transition active:scale-95"><i class="fa-solid fa-plus mr-1"></i>Add Custom Job</button>
+                            <button onclick="toggleCustomJobForm()" class="text-[11px] font-black text-[#569B91] uppercase tracking-wider hover:text-[#113A3E] transition active:scale-95"><i class="fa-solid fa-plus mr-1"></i>Add Sidequest</button>
                         </div>
-                        <div id="custom-job-ui" class="hidden flex space-x-2 mt-2 transition-all">
-                            <input type="text" id="custom-job-name" placeholder="Job Title" class="flex-1 bg-white text-[#113A3E] rounded-xl px-3 py-2 text-sm font-bold border border-[#184F55]/20 focus:outline-none focus:ring-2 focus:ring-[#569B91] placeholder-gray-400 shadow-inner">
-                            <input type="number" id="custom-job-salary" placeholder="$ / mo" class="w-24 bg-white text-[#113A3E] rounded-xl px-3 py-2 text-sm font-bold border border-[#184F55]/20 focus:outline-none focus:ring-2 focus:ring-[#569B91] placeholder-gray-400 shadow-inner">
-                            <button onclick="addCustomJob()" class="bg-[#569B91] text-white px-4 py-2 rounded-xl text-sm font-bold active:scale-95 transition shadow-sm hover:bg-[#184F55]"><i class="fa-solid fa-check"></i></button>
+                        
+                        <div id="custom-job-ui" class="hidden flex-col space-y-3 mt-2 p-4 bg-gray-100 rounded-2xl border border-gray-200 shadow-inner relative z-10">
+                            <input type="text" id="custom-job-name" placeholder="Gig Name (e.g. Tutor)" class="w-full bg-white text-[#113A3E] rounded-xl px-4 py-3 text-sm font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#569B91] placeholder-gray-400">
+                            <div class="flex space-x-2">
+                                <input type="number" id="custom-job-salary" placeholder="Salary ($/mo)" class="flex-1 bg-white text-[#113A3E] rounded-xl px-4 py-3 text-sm font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#569B91] placeholder-gray-400">
+                                <button onclick="addCustomJob()" class="bg-[#569B91] text-white px-5 py-3 rounded-xl text-sm font-black active:scale-95 transition shadow-sm hover:bg-[#184F55]"><i class="fa-solid fa-check"></i></button>
+                            </div>
                         </div>
                     </div>
 
@@ -85,14 +124,14 @@
             </section>
 
             <!-- SECTION 2: DASHBOARD -->
-            <section id="screen-dashboard" class="space-y-6">
-                <!-- Gamified Tier / XP Progress Bar -->
-                <div class="bg-gradient-to-r from-[#113A3E] to-[#569B91] p-5 rounded-[32px] shadow-md text-white relative overflow-hidden">
+            <section id="screen-dashboard" class="space-y-6 hidden">
+                
+                <!-- TUTORIAL TARGET 2: Tier Level Up System -->
+                <div id="tut-target-tier" class="bg-gradient-to-r from-[#113A3E] to-[#569B91] p-5 rounded-[32px] shadow-md text-white relative overflow-hidden">
                     <div class="flex justify-between items-start mb-2">
                         <div>
                             <span class="text-xs font-bold text-white/70 uppercase tracking-wider">Current Level</span>
                             <h3 id="tier-title" class="text-2xl font-black">Tier 2: Saver</h3>
-                            <!-- Clarification on how Bob reached Tier 2 -->
                             <p class="text-[10px] font-bold text-[#FFB5A7] mt-1 uppercase tracking-wide"><i class="fa-solid fa-check-circle mr-1"></i>Tier 1 Onboarding Complete</p>
                         </div>
                         <div id="tier-icon" class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-2xl shadow-inner mt-1">🌱</div>
@@ -110,7 +149,6 @@
                     <div class="flex justify-between items-center mb-4">
                         <span class="bg-[#0A2528] text-[#569B91] px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider">Active Balance</span>
                     </div>
-                    
                     <div class="flex items-end justify-between">
                         <div>
                             <h3 id="dash-cash" class="text-4xl font-black text-gray-800">$2,560</h3>
@@ -120,7 +158,6 @@
                             <span class="text-xs font-black text-[#113A3E]">80%</span>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-2 gap-3 mt-6 pt-5 border-t border-gray-100">
                         <div>
                             <span class="text-xs font-bold text-gray-400 uppercase">CPF Ordinary</span>
@@ -147,7 +184,6 @@
                             </div>
                             <div class="w-6 h-6 rounded-full border-2 border-gray-200"></div>
                         </div>
-
                         <div onclick="switchView('simulate')" class="bg-[#EEF5F3] p-4 rounded-2xl shadow-sm border border-[#184F55]/10 flex items-center justify-between cursor-pointer hover:bg-white active:scale-95 transition-all">
                             <div class="flex items-center space-x-4">
                                 <div class="bg-[#C1D3FE] w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xl shadow-inner"><i class="fa-solid fa-piggy-bank"></i></div>
@@ -161,17 +197,17 @@
                     </div>
                 </div>
 
-                <!-- Leaderboard -->
-                <div class="bg-[#EEF5F3] p-5 rounded-[32px] shadow-sm border border-[#569B91]/30 relative">
+                <!-- TUTORIAL TARGET 3: Gamified Streaks & Leaderboard -->
+                <div id="tut-target-streak" class="bg-[#EEF5F3] p-5 rounded-[32px] shadow-sm border border-[#569B91]/30 relative bg-white">
                     <h4 class="text-sm font-black text-[#113A3E] uppercase tracking-wide mb-3">Community Streaks</h4>
                     <div class="space-y-2">
-                        <div class="flex justify-between items-center bg-white/60 p-3 rounded-xl">
+                        <div class="flex justify-between items-center bg-gray-100 p-3 rounded-xl border border-gray-200">
                             <div class="flex items-center space-x-3 text-sm font-bold text-gray-800">
                                 <span>#1</span>
-                                <div class="w-6 h-6 bg-[#569B91] rounded-full flex items-center justify-center text-[10px] text-white">Y</div>
-                                <span>You</span>
+                                <div id="nav-user-initial" class="w-6 h-6 bg-[#569B91] rounded-full flex items-center justify-center text-[10px] text-white">Y</div>
+                                <span id="lb-user-name">You</span>
                             </div>
-                            <span class="font-black text-[#113A3E]">5d</span>
+                            <span class="font-black text-[#113A3E]">5d <i class="fa-solid fa-fire text-orange-400 text-xs"></i></span>
                         </div>
                         <div class="flex justify-between items-center px-3 py-1 opacity-70">
                             <div class="flex items-center space-x-3 text-sm font-bold text-gray-700">
@@ -189,6 +225,7 @@
                             </div>
                             <span class="font-black text-gray-600">3d</span>
                         </div>
+                        <!-- ADDED 4TH PERSON: SYUKRINAA -->
                         <div class="flex justify-between items-center px-3 py-1 opacity-70">
                             <div class="flex items-center space-x-3 text-sm font-bold text-gray-700">
                                 <span>#4</span>
@@ -204,7 +241,8 @@
             <!-- SECTION 3: LEARN -->
             <section id="screen-learn" class="space-y-6 hidden">
                 
-                <div class="bg-[#EEF5F3] p-5 rounded-[32px] shadow-sm border border-[#184F55]/10 space-y-4 relative">
+                <!-- TUTORIAL TARGET 4: Hype Scan -->
+                <div id="tut-target-hype" class="bg-[#EEF5F3] p-5 rounded-[32px] shadow-sm border border-[#184F55]/10 space-y-4 relative bg-white">
                     <div class="flex items-center justify-center mb-1">
                         <span class="text-xl font-black tracking-tight text-gray-800"><span class="text-blue-500">H</span><span class="text-red-500">y</span><span class="text-yellow-500">p</span><span class="text-blue-500">e</span> <span class="text-green-500">S</span><span class="text-red-500">c</span><span class="text-yellow-500">a</span><span class="text-blue-500">n</span></span>
                     </div>
@@ -213,7 +251,7 @@
                         <div class="flex space-x-2">
                             <div class="relative flex-1">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400"><i class="fa-solid fa-magnifying-glass"></i></span>
-                                <input id="hype-input" type="text" placeholder="Search a financial claim..." autocomplete="off" onkeyup="showSuggestions()" class="w-full bg-white text-[#113A3E] placeholder-gray-400 border border-[#184F55]/20 rounded-full pl-11 pr-4 py-3 font-bold text-sm focus:outline-none focus:shadow-md focus:border-transparent transition-all">
+                                <input id="hype-input" type="text" placeholder="Search a financial claim..." autocomplete="off" onkeyup="showSuggestions()" class="w-full bg-gray-50 text-[#113A3E] placeholder-gray-400 border border-gray-200 rounded-full pl-11 pr-4 py-3 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#569B91] transition-all">
                             </div>
                             <button onclick="runHypeDetector()" class="bg-[#113A3E] text-white font-bold px-5 py-3 rounded-full active:scale-95 transition text-sm shadow-sm hover:bg-[#184F55]"><i class="fa-solid fa-arrow-right"></i></button>
                         </div>
@@ -224,76 +262,65 @@
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 text-center">Trending Searches</p>
                         <div class="flex flex-wrap gap-2 justify-center">
                             <span onclick="setHypeSearch('Crypto 10x guaranteed returns')" class="cursor-pointer bg-[#0A2528] hover:bg-[#184F55] text-[#EEF5F3] px-3 py-1.5 rounded-full text-xs font-bold transition-colors">🔥 Crypto 10x</span>
-                            <span onclick="setHypeSearch('Are SSBs risk-free?')" class="cursor-pointer bg-[#0A2528] hover:bg-[#184F55] text-[#EEF5F3] px-3 py-1.5 rounded-full text-xs font-bold transition-colors">📈 Are SSBs safe?</span>
+                            <span onclick="setHypeSearch('Are SSBs risk-free?')" class="cursor-pointer bg-[#0A2528] hover:bg-[#184F55] text-[#EEF5F3] px-3 py-1.5 rounded-full text-xs font-bold transition-colors">📈 SSBs safe?</span>
+                            <span onclick="setHypeSearch('Is CPF a scam?')" class="cursor-pointer bg-[#0A2528] hover:bg-[#184F55] text-[#EEF5F3] px-3 py-1.5 rounded-full text-xs font-bold transition-colors">🏦 CPF scam?</span>
                         </div>
                     </div>
 
                     <div id="hype-result" class="hidden p-4 rounded-2xl text-xs font-bold border mt-2"></div>
                 </div>
 
-                <div>
+                <!-- TUTORIAL TARGET 5: Local SG Content -->
+                <div id="tut-target-local" class="bg-transparent rounded-3xl transition-all">
                     <h4 class="text-lg font-black text-[#EEF5F3] mb-3">Categories</h4>
-                    <div class="flex space-x-3 overflow-x-auto no-scrollbar pb-2">
+                    <div class="flex space-x-3 overflow-x-auto no-scrollbar pb-2 mb-4">
                         <button onclick="filterCategory('All', this)" class="cat-btn cursor-pointer active:scale-95 transition-transform bg-[#569B91] text-white border-[#569B91] px-5 py-2 rounded-full font-bold text-sm shadow-sm whitespace-nowrap border-2">All Topics</button>
                         <button onclick="filterCategory('Investing', this)" class="cat-btn cursor-pointer active:scale-95 transition-transform bg-[#EEF5F3] text-[#113A3E] border-transparent hover:border-[#184F55]/30 px-5 py-2 rounded-full font-bold text-sm shadow-sm whitespace-nowrap border-2">Investing</button>
                         <button onclick="filterCategory('Budgeting', this)" class="cat-btn cursor-pointer active:scale-95 transition-transform bg-[#EEF5F3] text-[#113A3E] border-transparent hover:border-[#184F55]/30 px-5 py-2 rounded-full font-bold text-sm shadow-sm whitespace-nowrap border-2">Budgeting</button>
                         <button onclick="filterCategory('CPF', this)" class="cat-btn cursor-pointer active:scale-95 transition-transform bg-[#EEF5F3] text-[#113A3E] border-transparent hover:border-[#184F55]/30 px-5 py-2 rounded-full font-bold text-sm shadow-sm whitespace-nowrap border-2">CPF</button>
                     </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div onclick="openContent('cpf-basics')" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#184F55]/10 flex flex-col items-center text-center transition-all duration-200" data-category="CPF" data-featured="true" data-tier="1">
+                            <div class="w-16 h-16 bg-[#569B91] rounded-2xl mb-3 flex items-center justify-center text-2xl text-white"><i class="fa-brands fa-youtube"></i></div>
+                            <h5 class="text-sm font-black text-gray-800 leading-tight">CPF Ordinary Basics</h5>
+                            <p class="text-[10px] font-bold text-gray-400 mt-1">3 Min Video</p>
+                        </div>
+                        
+                        <div onclick="openContent('etf-basics')" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#184F55]/10 flex flex-col items-center text-center transition-all duration-200" data-category="Investing" data-featured="true" data-tier="1">
+                            <div class="w-16 h-16 bg-[#FFB5A7] rounded-2xl mb-3 flex items-center justify-center text-2xl text-white"><i class="fa-brands fa-instagram"></i></div>
+                            <h5 class="text-sm font-black text-gray-800 leading-tight">What is an ETF?</h5>
+                            <p class="text-[10px] font-bold text-gray-400 mt-1">Infographic</p>
+                        </div>
+
+                        <div onclick="openContent('budget-rule')" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#184F55]/10 flex flex-col items-center text-center transition-all duration-200" data-category="Budgeting" data-featured="true" data-tier="1">
+                            <div class="w-16 h-16 bg-[#C1D3FE] rounded-2xl mb-3 flex items-center justify-center text-2xl text-white"><i class="fa-solid fa-chart-pie"></i></div>
+                            <h5 class="text-sm font-black text-gray-800 leading-tight">The 50/30/20 Rule</h5>
+                            <p class="text-[10px] font-bold text-gray-400 mt-1">2 Min Read</p>
+                        </div>
+
+                        <div onclick="openContent('invest-ssb')" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#184F55]/10 flex flex-col items-center text-center transition-all duration-200" data-category="Investing" data-featured="false" data-tier="2" style="display: none;">
+                            <div class="w-16 h-16 bg-[#FFB5A7] rounded-2xl mb-3 flex items-center justify-center text-2xl text-white"><i class="fa-solid fa-chart-line"></i></div>
+                            <h5 class="text-sm font-black text-gray-800 leading-tight">SSB Investing</h5>
+                            <p class="text-[10px] font-bold text-gray-400 mt-1">4 Min Read</p>
+                        </div>
+
+                        <!-- NEW: Read More Card -->
+                        <div id="read-more-card" onclick="filterCategory('Investing', document.querySelectorAll('.cat-btn')[1])" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#569B91]/40 flex flex-col items-center justify-center text-center transition-all duration-200" data-featured="true">
+                            <div class="w-12 h-12 bg-white/70 rounded-full mb-2 flex items-center justify-center text-xl text-[#113A3E]"><i class="fa-solid fa-arrow-right"></i></div>
+                            <h5 class="text-sm font-black text-[#113A3E] leading-tight">Read more</h5>
+                            <p class="text-[10px] font-bold text-[#569B91] mt-1">Explore categories</p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Content Cards -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div onclick="openContent('cpf-basics')" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#184F55]/10 flex flex-col items-center text-center transition-all duration-200" data-category="CPF" data-featured="true" data-tier="1">
-                        <div class="w-16 h-16 bg-[#569B91] rounded-2xl mb-3 flex items-center justify-center text-2xl text-white"><i class="fa-brands fa-youtube"></i></div>
-                        <h5 class="text-sm font-black text-gray-800 leading-tight">CPF Ordinary Basics</h5>
-                        <p class="text-[10px] font-bold text-gray-400 mt-1">3 Min Video</p>
-                    </div>
-                    
-                    <div onclick="openContent('cpf-sa')" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#184F55]/10 flex flex-col items-center text-center transition-all duration-200" data-category="CPF" data-featured="false" data-tier="2" style="display: none;">
-                        <div class="w-16 h-16 bg-[#569B91] rounded-2xl mb-3 flex items-center justify-center text-2xl text-white"><i class="fa-solid fa-piggy-bank"></i></div>
-                        <h5 class="text-sm font-black text-gray-800 leading-tight">CPF Special Account</h5>
-                        <p class="text-[10px] font-bold text-gray-400 mt-1">2 Min Read</p>
-                    </div>
-
-                    <div onclick="openContent('etf-basics')" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#184F55]/10 flex flex-col items-center text-center transition-all duration-200" data-category="Investing" data-featured="true" data-tier="1">
-                        <div class="w-16 h-16 bg-[#FFB5A7] rounded-2xl mb-3 flex items-center justify-center text-2xl text-white"><i class="fa-brands fa-instagram"></i></div>
-                        <h5 class="text-sm font-black text-gray-800 leading-tight">What is an ETF?</h5>
-                        <p class="text-[10px] font-bold text-gray-400 mt-1">Infographic</p>
-                    </div>
-
-                    <div onclick="openContent('invest-ssb')" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#184F55]/10 flex flex-col items-center text-center transition-all duration-200" data-category="Investing" data-featured="false" data-tier="2" style="display: none;">
-                        <div class="w-16 h-16 bg-[#FFB5A7] rounded-2xl mb-3 flex items-center justify-center text-2xl text-white"><i class="fa-solid fa-chart-line"></i></div>
-                        <h5 class="text-sm font-black text-gray-800 leading-tight">SSB Investing</h5>
-                        <p class="text-[10px] font-bold text-gray-400 mt-1">4 Min Read</p>
-                    </div>
-
-                    <div onclick="openContent('budget-rule')" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#184F55]/10 flex flex-col items-center text-center transition-all duration-200" data-category="Budgeting" data-featured="true" data-tier="1">
-                        <div class="w-16 h-16 bg-[#C1D3FE] rounded-2xl mb-3 flex items-center justify-center text-2xl text-white"><i class="fa-solid fa-chart-pie"></i></div>
-                        <h5 class="text-sm font-black text-gray-800 leading-tight">The 50/30/20 Rule</h5>
-                        <p class="text-[10px] font-bold text-gray-400 mt-1">2 Min Read</p>
-                    </div>
-
-                    <div onclick="openContent('budget-creep')" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#184F55]/10 flex flex-col items-center text-center transition-all duration-200" data-category="Budgeting" data-featured="false" data-tier="2" style="display: none;">
-                        <div class="w-16 h-16 bg-[#C1D3FE] rounded-2xl mb-3 flex items-center justify-center text-2xl text-white"><i class="fa-solid fa-arrow-trend-down"></i></div>
-                        <h5 class="text-sm font-black text-gray-800 leading-tight">Lifestyle Creep</h5>
-                        <p class="text-[10px] font-bold text-gray-400 mt-1">3 Min Read</p>
-                    </div>
-
-                    <!-- "View More" Card to fill the empty space in "All Topics" -->
-                    <div id="view-more-card" onclick="filterCategory('Investing', document.querySelectorAll('.cat-btn')[1])" class="learn-card cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-3xl shadow-sm border border-[#569B91]/40 flex flex-col items-center justify-center text-center transition-all duration-200" data-featured="true">
-                        <div class="w-12 h-12 bg-white/70 rounded-full mb-2 flex items-center justify-center text-xl text-[#113A3E]"><i class="fa-solid fa-arrow-right"></i></div>
-                        <h5 class="text-sm font-black text-[#113A3E] leading-tight">View More</h5>
-                        <p class="text-[10px] font-bold text-[#569B91] mt-1">Explore categories</p>
-                    </div>
-
-                </div>
-
-                <!-- News Articles with Tiers -->
                 <div class="mt-8">
-                    <div class="flex justify-between items-center mb-3">
+                    <div class="flex justify-between items-center mb-1">
                         <h4 class="text-lg font-black text-[#EEF5F3]">For You</h4>
                         <span id="news-tier-badge" class="bg-[#113A3E] text-[#EEF5F3] px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Tier 2 News</span>
                     </div>
+                    <p class="text-[10px] font-bold text-[#569B91] uppercase tracking-wider mb-3">Based on your Hype Scans & Tier</p>
+                    
                     <div class="space-y-3">
                         <div onclick="openContent('news-ssb')" class="news-card cursor-pointer hover:bg-white hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-2xl shadow-sm border border-[#184F55]/10 flex space-x-4 items-center transition-all duration-200" data-tier="1">
                             <div class="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center text-blue-400 text-xl flex-shrink-0"><i class="fa-regular fa-newspaper"></i></div>
@@ -309,7 +336,6 @@
                                 <p class="text-[10px] font-bold text-gray-400 mt-1">CNA · 5h ago</p>
                             </div>
                         </div>
-                        <!-- Tier 3 News (Hidden initially) -->
                         <div onclick="openContent('news-reits')" class="news-card hidden cursor-pointer hover:bg-white hover:shadow-md active:scale-95 bg-[#EEF5F3] p-4 rounded-2xl shadow-sm border border-[#184F55]/10 space-x-4 items-center transition-all duration-200" data-tier="3">
                             <div class="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center text-purple-400 text-xl flex-shrink-0"><i class="fa-solid fa-building-user"></i></div>
                             <div>
@@ -322,77 +348,85 @@
             </section>
 
             <!-- SECTION 4: SIMULATE -->
-            <section id="screen-simulate" class="space-y-6 hidden">
-                <div>
-                    <h4 class="text-lg font-black text-[#EEF5F3] mb-3">My Savings Goals</h4>
-                    <div class="space-y-4">
+            <section id="screen-simulate" class="space-y-6 hidden pt-2">
+                
+                <!-- TUTORIAL TARGET 6: Expense Scaler & Goals -->
+                <div id="tut-target-habit" class="space-y-6 bg-transparent rounded-3xl transition-all pb-4">
+                    <div>
+                        <div class="flex justify-between items-end mb-3">
+                            <h4 class="text-lg font-black text-[#EEF5F3]">What's the big plan?</h4>
+                            <button onclick="toggleCustomGoalForm()" class="text-[11px] font-black text-[#569B91] uppercase tracking-wider hover:text-white transition active:scale-95"><i class="fa-solid fa-plus mr-1"></i>Add Goal</button>
+                        </div>
                         
-                        <div class="bg-[#EEF5F3] p-5 rounded-[32px] shadow-sm border border-[#184F55]/10">
-                            <div class="flex items-center space-x-4 mb-3">
-                                <div class="w-14 h-14 bg-[#C1D3FE] rounded-full flex items-center justify-center text-2xl flex-shrink-0">✈️</div>
-                                <div class="flex-1">
-                                    <h5 class="text-sm font-black text-gray-800">Graduation Trip</h5>
-                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Japan</p>
-                                </div>
-                                <div class="text-right">
-                                    <span class="block text-sm font-black text-[#5A7ED8]">$1,400</span>
-                                    <span class="block text-[10px] font-bold text-gray-400">of $3,500 total</span>
-                                </div>
+                        <div id="custom-goal-ui" class="hidden flex-col space-y-3 mb-4 p-4 bg-gray-100 rounded-2xl border border-gray-200 shadow-inner">
+                            <input type="text" id="custom-goal-name" placeholder="Goal Name (e.g. Bali Trip)" class="w-full bg-white text-[#113A3E] rounded-xl px-4 py-3 text-sm font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#569B91] placeholder-gray-400">
+                            <div class="flex space-x-2">
+                                <input type="number" id="custom-goal-target" placeholder="Target ($)" class="w-1/2 bg-white text-[#113A3E] rounded-xl px-4 py-3 text-sm font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#569B91]">
+                                <input type="number" id="custom-goal-saved" placeholder="Saved ($)" class="w-1/2 bg-white text-[#113A3E] rounded-xl px-4 py-3 text-sm font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#569B91]">
                             </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2">
-                                <div class="bg-[#5A7ED8] h-2 rounded-full w-[40%]"></div>
-                            </div>
+                            <button onclick="addCustomGoal()" class="w-full bg-[#569B91] text-white px-5 py-3 rounded-xl text-sm font-black active:scale-95 transition shadow-sm hover:bg-[#184F55]"><i class="fa-solid fa-check mr-1"></i> Add Goal</button>
                         </div>
 
-                        <div class="bg-[#EEF5F3] p-5 rounded-[32px] shadow-sm border border-[#184F55]/10">
-                            <div class="flex items-center space-x-4 mb-3">
-                                <div class="w-14 h-14 bg-[#FFB5A7] rounded-full flex items-center justify-center text-2xl flex-shrink-0">🎟️</div>
-                                <div class="flex-1">
-                                    <h5 class="text-sm font-black text-gray-800 leading-tight">BIGBANG VIP Tickets</h5>
-                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">National Stadium</p>
+                        <div id="savings-goals-container" class="space-y-3">
+                            <div class="bg-[#EEF5F3] p-5 rounded-3xl shadow-sm border border-[#184F55]/10">
+                                <div class="flex items-center space-x-4 mb-3">
+                                    <div class="w-12 h-12 bg-[#C1D3FE] rounded-full flex items-center justify-center text-xl flex-shrink-0">✈️</div>
+                                    <div class="flex-1">
+                                        <h5 class="text-sm font-black text-gray-800">Graduation Trip</h5>
+                                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Japan</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="block text-sm font-black text-[#5A7ED8]">$1,400</span>
+                                    </div>
                                 </div>
-                                <div class="text-right">
-                                    <span class="block text-sm font-black text-[#D86B5A]">$340</span>
-                                    <span class="block text-[10px] font-bold text-gray-400">of $400 total</span>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-[#5A7ED8] h-2 rounded-full w-[40%]"></div>
                                 </div>
-                            </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2">
-                                <div class="bg-[#D86B5A] h-2 rounded-full w-[85%]"></div>
                             </div>
                         </div>
-
-                    </div>
-                </div>
-
-                <div class="bg-[#EEF5F3] p-6 rounded-[32px] shadow-sm border border-[#184F55]/10 space-y-5">
-                    <div class="text-center">
-                        <i id="expense-icon" class="fa-solid fa-mug-hot text-3xl text-[#569B91] mb-2 transition-all"></i>
-                        <h4 class="text-sm font-black text-[#113A3E] uppercase tracking-wide">Trending Expense Scaler</h4>
-                        <p class="text-xs font-bold text-gray-400 mt-1">Select a habit and see how cutting back grows your simulated wealth.</p>
                     </div>
 
-                    <div class="flex justify-center mt-3">
-                        <select id="expense-type" class="w-full max-w-[200px] bg-[#0A2528] text-[#EEF5F3] text-center rounded-xl px-4 py-2 font-black text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#569B91]" onchange="updateBenchmarker()">
-                            <option value="6.50" data-name="Drinks" data-icon="fa-mug-hot">Matcha / BBT ($6.50)</option>
-                            <option value="15.90" data-name="Blind Box" data-icon="fa-box-open">Popmart Blind Box ($15.90)</option>
-                            <option value="9.90" data-name="Acai" data-icon="fa-bowl-food">Acai Bowl ($9.90)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="text-center mt-2">
-                        <span id="bbt-count" class="text-3xl font-black text-[#113A3E]">4 Times</span>
-                        <span class="text-sm font-bold text-gray-400"> / week</span>
-                    </div>
-                    
-                    <input id="bbt-slider" type="range" min="0" max="10" value="4" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#569B91]" oninput="updateBenchmarker()">
+                    <div class="bg-[#EEF5F3] p-6 rounded-[32px] shadow-sm border border-[#184F55]/10 space-y-5 bg-white">
+                        <div class="text-center">
+                            <i id="expense-icon" class="fa-solid fa-mug-hot text-3xl text-[#569B91] mb-2 transition-all"></i>
+                            <h4 class="text-sm font-black text-[#113A3E] uppercase tracking-wide">Trending Expense Scaler</h4>
+                            <p class="text-xs font-bold text-gray-400 mt-1">See how cutting back grows your simulated wealth.</p>
+                        </div>
 
-                    <div class="bg-[#0A2528] p-4 rounded-2xl text-sm font-bold text-[#EEF5F3] flex justify-between items-center">
-                        <span>1 Yr Simulated Return:</span>
-                        <span id="bbt-savings" class="text-lg font-black text-[#569B91]">+$1,392.50</span>
+                        <div class="flex flex-col space-y-2 mt-3">
+                            <div class="flex justify-between items-end px-1">
+                                <label class="text-[11px] font-bold text-gray-400 uppercase">Select Guilty Pleasure</label>
+                                <button onclick="toggleCustomExpenseForm()" class="text-[11px] font-black text-[#569B91] uppercase hover:text-[#113A3E] transition active:scale-95"><i class="fa-solid fa-plus mr-1"></i>Add Yours</button>
+                            </div>
+                            <select id="expense-type" class="w-full bg-[#0A2528] text-[#EEF5F3] text-center rounded-xl px-4 py-3 font-black text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#569B91]" onchange="updateBenchmarker()">
+                                <option value="6.50" data-name="Drinks" data-icon="fa-mug-hot">Matcha / BBT ($6.50)</option>
+                                <option value="15.90" data-name="Blind Box" data-icon="fa-box-open">Popmart Blind Box ($15.90)</option>
+                            </select>
+                            
+                            <div id="custom-expense-ui" class="hidden flex-col space-y-2 p-3 bg-gray-100 rounded-xl border border-gray-200">
+                                <input type="text" id="custom-expense-name" placeholder="Item (e.g. GrabFood)" class="w-full bg-white text-[#113A3E] rounded-lg px-3 py-2 text-sm font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#569B91]">
+                                <div class="flex space-x-2">
+                                    <input type="number" id="custom-expense-cost" placeholder="Cost ($)" class="flex-1 bg-white text-[#113A3E] rounded-lg px-3 py-2 text-sm font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#569B91]">
+                                    <button onclick="addCustomExpense()" class="bg-[#569B91] text-white px-4 py-2 rounded-lg text-sm font-black active:scale-95 transition shadow-sm hover:bg-[#184F55]"><i class="fa-solid fa-check"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-2">
+                            <span id="bbt-count" class="text-3xl font-black text-[#113A3E]">4 Times</span>
+                            <span class="text-sm font-bold text-gray-400"> / week</span>
+                        </div>
+                        
+                        <input id="bbt-slider" type="range" min="0" max="10" value="4" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#569B91]" oninput="updateBenchmarker()">
+
+                        <div class="bg-[#0A2528] p-4 rounded-2xl text-sm font-bold text-[#EEF5F3] flex justify-between items-center">
+                            <span>1 Yr Simulated Return:</span>
+                            <span id="bbt-savings" class="text-lg font-black text-[#569B91]">+$1,392.50</span>
+                        </div>
                     </div>
                 </div>
             </section>
-
+            
             <!-- SECTION 5: ARTICLE READER -->
             <section id="screen-content" class="space-y-6 hidden">
                 <button onclick="switchView('learn')" class="flex items-center space-x-2 text-[#569B91] hover:text-[#EEF5F3] transition font-bold text-sm active:scale-95">
@@ -438,7 +472,7 @@
         </main>
 
         <!-- Floating Bottom Navigation -->
-        <div class="absolute bottom-6 left-0 right-0 px-6 z-40">
+        <div id="bottom-nav" class="absolute bottom-6 left-0 right-0 px-6 z-40 hidden">
             <nav class="bg-[#EEF5F3] rounded-full shadow-lg border border-[#184F55]/10 px-6 py-4 flex justify-between items-center">
                 <button onclick="switchView('onboarding')" id="tab-onboarding" class="text-gray-400 hover:text-gray-800 transition flex flex-col items-center">
                     <i class="fa-solid fa-wand-magic-sparkles text-xl mb-1"></i>
@@ -460,7 +494,6 @@
         </div>
     </div>
 
-    <!-- External Application Scripts -->
     <script src="app.js"></script>
 </body>
 </html>
